@@ -18,12 +18,13 @@ dayjs.locale('zh-cn');
 
 // 用 ref 声明响应式数据（替代原来的 data()）
 const locale = ref(zhCN);
-const loginUserStore = useLoginUserStore()
-loginUserStore.fetchLoginUser()
-
-healthUsingGet().then((res) => {
-  console.log(res)
-})
+// 已经改为在权限校验文件中获取
+// const loginUserStore = useLoginUserStore()
+// loginUserStore.fetchLoginUser()
+//
+// healthUsingGet().then((res) => {
+//   console.log(res)
+// })
 </script>
 
 <style scoped></style>
