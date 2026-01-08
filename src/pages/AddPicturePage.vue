@@ -3,7 +3,19 @@
     <h2 style="margin-bottom: 16px">
       {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
-    <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+    <a-typography-paragraph v-if="spaceId" type="secondary">
+      保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
+    </a-typography-paragraph>
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="文件上传">
+        <PictureUpload :picture="picture" :spaceId="spaceIdNumber" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL 上传" force-render>
+        <UrlPictureUpload :picture="picture" :spaceId="spaceIdNumber" :onSuccess="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
+
     <a-form v-if="picture" layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item label="名称" name="name">
         <a-input v-model:value="pictureForm.name" placeholder="请输入名称" />
@@ -41,7 +53,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
@@ -53,6 +65,9 @@ import {
 } from '@/api/pictureController'
 import { useRoute, useRouter } from 'vue-router'
 import PictureUpload from '@/components/PictureUpload.vue'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+
+const uploadType = ref<'file' | 'url'>('file')
 
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -62,10 +77,23 @@ const onSuccess = (newPicture: API.PictureVO) => {
   pictureForm.name = newPicture.name
 }
 
-const categoryOptions = ref<string[]>([])
-const tagOptions = ref<string[]>([])
+// 下拉选项（标签 / 分类）
+const categoryOptions = ref<{ value: string; label: string }[]>([])
+const tagOptions = ref<{ value: string; label: string }[]>([])
 
 const router = useRouter()
+const route = useRoute()
+
+// 空间 id（字符串，用于显示）
+const spaceId = computed(() => {
+  return route.query?.spaceId as string | undefined
+})
+
+// 空间 id（数字，用于 API）
+const spaceIdNumber = computed(() => {
+  const id = route.query?.spaceId
+  return id ? Number(id) : undefined
+})
 
 /**
  * 提交表单
@@ -116,8 +144,6 @@ const getTagCategoryOptions = async () => {
 onMounted(() => {
   getTagCategoryOptions()
 })
-
-const route = useRoute()
 
 // 获取老数据
 const getOldPicture = async () => {

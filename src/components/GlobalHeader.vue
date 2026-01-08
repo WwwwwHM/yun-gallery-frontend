@@ -27,6 +27,12 @@
                 {{ loginUserStore.loginUser.userName ?? '无名' }}
               </a-space>
               <template #overlay>
+                <a-menu-item>
+                  <router-link to="/my_space">
+                    <UserOutlined />
+                    我的空间
+                  </router-link>
+                </a-menu-item>
                 <a-menu>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
@@ -76,6 +82,11 @@ const originItems = [
     key: '/admin/pictureManage',
     label: '图片管理',
     title: '图片管理',
+  },
+  {
+    key: '/admin/spaceManage',
+    label: '空间管理',
+    title: '空间管理',
   },
   {
     key: 'others',

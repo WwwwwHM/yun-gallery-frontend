@@ -44,7 +44,8 @@
               <img
                 style="height: 180px; object-fit: cover"
                 :alt="picture.name"
-                :src="picture.url"
+                :src="picture.thumbnailUrl ?? picture.url"
+                loading="lazy"
               />
             </template>
             <a-card-meta :title="picture.name">
@@ -130,7 +131,6 @@ const fetchData = async () => {
   loading.value = false
 }
 
-
 const categoryList = ref<string[]>([])
 const selectedCategory = ref<string>('all')
 const tagList = ref<string[]>([])
@@ -170,7 +170,6 @@ const doClickPicture = (picture) => {
     path: `/picture/${picture.id}`,
   })
 }
-
 </script>
 
 <style scoped>
